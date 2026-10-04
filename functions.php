@@ -24,12 +24,12 @@ use YahnisElsts\PluginUpdateChecker\v5p7\PucFactory;
 
 $maleficio_update_checker = PucFactory::buildUpdateChecker(
     'https://github.com/maleficio-studio/portfolio/',
-    get_template_directory() . '/functions.php',
+    __FILE__,
     'maleficio-portfolio'
 );
 
 // Use GitHub Releases as the source of updates
-$maleficio_update_checker->getVcs()->setBranch('main');
+$maleficio_update_checker->setBranch('main');
 
 /**
  * Filter block output to replace content with ACF data
