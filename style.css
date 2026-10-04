@@ -1,14 +1,19 @@
 /*
-Theme Name: Portfolio
+Theme Name: MALEFICIO Portfolio
+Theme URI: https://github.com/maleficio-studio/portfolio
 Author: Corentin Delvaque
-Version: 1.0
-Description: Minimal block theme.
+Author URI: https://maleficio-studio.fr
+Description: Thème WordPress du portfolio MALEFICIO
+Version: 1.0.0
 */
 
 body {
-    background-color: #111827;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-    background-size: 24px 24px;
-    color: #f3f4f6;
-    margin: 0;
+  background-color: #111827;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.1) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  color: #f3f4f6;
+  margin: 0;
 }

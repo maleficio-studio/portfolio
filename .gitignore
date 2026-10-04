@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# Node (if ever used for build tools)
+node_modules/
+
+# .md
+UPDATE.md
+

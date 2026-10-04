@@ -1,0 +1,98 @@
+name: Release Theme
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and Release Theme
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: tag_version
+        run: |
+          # Remove 'v' prefix from tag name
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=${TAG_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Tag version: ${TAG_VERSION}"
+
+      - name: Verify version consistency
+        run: |
+          TAG_VERSION="${{ steps.tag_version.outputs.version }}"
+          
+          # Extract version from style.css
+          CSS_VERSION=$(grep -i "^[[:space:]]*Version:" style.css | head -1 | sed 's/.*Version:[[:space:]]*//' | sed 's/[[:space:]]*$//')
+          
+          echo "Tag version:      ${TAG_VERSION}"
+          echo "style.css version: ${CSS_VERSION}"
+          
+          if [ "${TAG_VERSION}" != "${CSS_VERSION}" ]; then
+            echo ""
+            echo "::error::Version mismatch! Tag says v${TAG_VERSION} but style.css says Version: ${CSS_VERSION}"
+            echo "Please update style.css to match the tag version before creating the release."
+            exit 1
+          fi
+          
+          echo "✅ Versions match."
+
+      - name: Create theme ZIP
+        run: |
+          VERSION="${{ steps.tag_version.outputs.version }}"
+          THEME_SLUG="maleficio-portfolio"
+          ZIP_NAME="${THEME_SLUG}-${VERSION}.zip"
+          
+          # Create a temporary directory with the correct theme slug name
+          mkdir -p "/tmp/${THEME_SLUG}"
+          
+          # Copy all theme files, excluding development/unnecessary files
+          rsync -av --exclude='.git' \
+                    --exclude='.github' \
+                    --exclude='.gitignore' \
+                    --exclude='.DS_Store' \
+                    --exclude='Thumbs.db' \
+                    --exclude='*.log' \
+                    --exclude='node_modules' \
+                    --exclude='.env' \
+                    --exclude='.editorconfig' \
+                    --exclude='.vscode' \
+                    --exclude='UPDATE.md' \
+                    --exclude='README.md' \
+                    ./ "/tmp/${THEME_SLUG}/"
+          
+          # Create the ZIP from the temporary directory
+          cd /tmp
+          zip -r "${GITHUB_WORKSPACE}/${ZIP_NAME}" "${THEME_SLUG}/" -x "${THEME_SLUG}/.git/*"
+          
+          echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
+          echo "📦 Created ${ZIP_NAME}"
+          echo ""
+          echo "Contents:"
+          unzip -l "${GITHUB_WORKSPACE}/${ZIP_NAME}" | head -40
+        id: create_zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "MALEFICIO Portfolio v${{ steps.tag_version.outputs.version }}"
+          body: |
+            ## MALEFICIO Portfolio v${{ steps.tag_version.outputs.version }}
+            
+            ### Installation
+            1. Téléchargez le fichier ZIP ci-dessous
+            2. Dans WordPress : **Apparence → Thèmes → Ajouter → Téléverser un thème**
+            3. Sélectionnez le fichier ZIP et activez le thème
+            
+            ### Mise à jour automatique
+            Si le thème est déjà installé, la mise à jour sera détectée automatiquement dans **Tableau de bord → Mises à jour**.
+          files: ${{ steps.create_zip.outputs.zip_name }}
+          draft: false
+          prerelease: false

@@ -1,12 +1,35 @@
 <?php
 /**
  * Theme functions and definitions
+ *
+ * @package MALEFICIO Portfolio
+ * @version 1.0.0
  */
 
 // Add support for block templates
 add_action('after_setup_theme', function() {
     add_theme_support('block-templates');
 });
+
+/**
+ * ─────────────────────────────────────────────────────────────
+ * Automatic Theme Updates via GitHub Releases
+ * Uses YahnisElsts/plugin-update-checker v5.7
+ * Repository: https://github.com/maleficio-studio/portfolio
+ * ─────────────────────────────────────────────────────────────
+ */
+require get_template_directory() . '/vendor/plugin-update-checker/plugin-update-checker.php';
+
+use YahnisElsts\PluginUpdateChecker\v5p7\PucFactory;
+
+$maleficio_update_checker = PucFactory::buildUpdateChecker(
+    'https://github.com/maleficio-studio/portfolio/',
+    get_template_directory() . '/functions.php',
+    'maleficio-portfolio'
+);
+
+// Use GitHub Releases as the source of updates
+$maleficio_update_checker->getVcs()->setBranch('main');
 
 /**
  * Filter block output to replace content with ACF data
