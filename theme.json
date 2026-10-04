@@ -1,0 +1,231 @@
+{
+	"$schema": "https://schemas.wp.org/wp/7.1/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": true,
+		"layout": {
+			"contentSize": "800px",
+			"wideSize": "1200px"
+		},
+		"typography": {
+			"fluid": true,
+			"fontFamilies": [
+				{
+					"fontFace": [
+						{
+							"fontFamily": "\"Pixelify Sans\"",
+							"fontStyle": "normal",
+							"fontWeight": "400",
+							"src": [
+								"file:./assets/fonts/pixelify-sans/pixelify-sans-400-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Pixelify Sans\"",
+							"fontStyle": "normal",
+							"fontWeight": "500",
+							"src": [
+								"file:./assets/fonts/pixelify-sans/pixelify-sans-500-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Pixelify Sans\"",
+							"fontStyle": "normal",
+							"fontWeight": "600",
+							"src": [
+								"file:./assets/fonts/pixelify-sans/pixelify-sans-600-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Pixelify Sans\"",
+							"fontStyle": "normal",
+							"fontWeight": "700",
+							"src": [
+								"file:./assets/fonts/pixelify-sans/pixelify-sans-700-normal.woff2"
+							]
+						}
+					],
+					"fontFamily": "\"Pixelify Sans\", system-ui",
+					"name": "Pixelify Sans",
+					"slug": "pixelify-sans"
+				},
+				{
+					"fontFace": [
+						{
+							"fontFamily": "\"Google Sans Flex\"",
+							"fontStyle": "normal",
+							"fontWeight": "100",
+							"src": [
+								"file:./assets/fonts/google-sans-flex/google-sans-flex-100-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Google Sans Flex\"",
+							"fontStyle": "normal",
+							"fontWeight": "200",
+							"src": [
+								"file:./assets/fonts/google-sans-flex/google-sans-flex-200-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Google Sans Flex\"",
+							"fontStyle": "normal",
+							"fontWeight": "300",
+							"src": [
+								"file:./assets/fonts/google-sans-flex/google-sans-flex-300-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Google Sans Flex\"",
+							"fontStyle": "normal",
+							"fontWeight": "400",
+							"src": [
+								"file:./assets/fonts/google-sans-flex/google-sans-flex-400-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Google Sans Flex\"",
+							"fontStyle": "normal",
+							"fontWeight": "500",
+							"src": [
+								"file:./assets/fonts/google-sans-flex/google-sans-flex-500-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Google Sans Flex\"",
+							"fontStyle": "normal",
+							"fontWeight": "600",
+							"src": [
+								"file:./assets/fonts/google-sans-flex/google-sans-flex-600-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Google Sans Flex\"",
+							"fontStyle": "normal",
+							"fontWeight": "700",
+							"src": [
+								"file:./assets/fonts/google-sans-flex/google-sans-flex-700-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Google Sans Flex\"",
+							"fontStyle": "normal",
+							"fontWeight": "800",
+							"src": [
+								"file:./assets/fonts/google-sans-flex/google-sans-flex-800-normal.woff2"
+							]
+						},
+						{
+							"fontFamily": "\"Google Sans Flex\"",
+							"fontStyle": "normal",
+							"fontWeight": "900",
+							"src": [
+								"file:./assets/fonts/google-sans-flex/google-sans-flex-900-normal.woff2"
+							]
+						}
+					],
+					"fontFamily": "\"Google Sans Flex\", sans-serif",
+					"name": "Google Sans Flex",
+					"slug": "google-sans-flex"
+				}
+			]
+		}
+	},
+	"styles": {
+		"background": {
+			"backgroundAttachment": "fixed",
+			"backgroundImage": {
+				"id": 27,
+				"source": "file",
+				"title": "pattern-triforce",
+				"url": "https://portfolio-de-corentin-delvaque.wp.local/wp-content/uploads/2026/09/pattern-triforce.png"
+			},
+			"backgroundPosition": "50% 0%",
+			"backgroundSize": "50px"
+		},
+		"color": {
+			"background": "var(--wp--preset--color--black)",
+			"text": "var(--wp--preset--color--white)"
+		},
+		"elements": {
+			"caption": {
+				"color": {
+					"text": "var(--wp--preset--color--white)"
+				}
+			},
+			"cite": {
+				"color": {
+					"text": "var(--wp--preset--color--white)"
+				}
+			},
+			"h1": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--pixelify-sans)",
+					"fontSize": "1.5rem"
+				}
+			},
+			"h2": {
+				"color": {
+					"text": "var(--wp--preset--color--white)"
+				},
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--pixelify-sans)",
+					"fontSize": "8rem",
+					"textAlign": "center"
+				}
+			},
+			"h3": {
+				"color": {
+					"text": "var(--wp--preset--color--white)"
+				},
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--pixelify-sans)",
+					"fontSize": "4rem",
+					"textAlign": "center"
+				}
+			},
+			"h4": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--pixelify-sans)",
+					"fontSize": "2.5rem"
+				}
+			},
+			"heading": {
+				"color": {
+					"text": "var(--wp--preset--color--white)"
+				},
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--google-sans-flex)"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var(--wp--preset--color--white)"
+				}
+			},
+			"select": {
+				"color": {
+					"text": "var(--wp--preset--color--white)"
+				}
+			},
+			"textInput": {
+				"color": {
+					"text": "var(--wp--preset--color--white)"
+				}
+			}
+		},
+		"spacing": {
+			"blockGap": "var(--wp--preset--spacing--50)",
+			"padding": {
+				"bottom": "0",
+				"left": "0",
+				"right": "0",
+				"top": "0"
+			}
+		},
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--google-sans-flex)",
+			"fontSize": "16px"
+		}
+	}
+}

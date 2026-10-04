@@ -1,0 +1,14 @@
+/*
+Theme Name: Portfolio
+Author: Corentin Delvaque
+Version: 1.0
+Description: Minimal block theme.
+*/
+
+body {
+    background-color: #111827;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: #f3f4f6;
+    margin: 0;
+}
