@@ -146,14 +146,7 @@ function portfolio_dynamic_blocks_with_acf( $block_content, $block ) {
             }
 
             if ( !empty($url) ) {
-                // Création de l'iframe de prévisualisation
-                $html = '<div style="margin-bottom:20px; width:100%; max-width:100%; margin-top:20px;">';
-                $html .= '<iframe src="' . esc_url($url) . '" width="100%" height="600" style="border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" allowfullscreen loading="lazy" title="' . esc_attr($title) . '"></iframe>';
-                $html .= '</div>';
-                
-                // Bouton de secours / accès direct en dessous
-                $html .= '<div class="wp-block-buttons"><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="' . esc_url($url) . '" target="' . esc_attr($target) . '" rel="noopener noreferrer">' . esc_html($title) . '</a></div></div>';
-                
+                $html = '<div class="wp-block-buttons"><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="' . esc_url($url) . '" target="' . esc_attr($target) . '" rel="noopener noreferrer">' . esc_html($title) . '</a></div></div>';
                 $block_content = $html;
             } else {
                 return '';
