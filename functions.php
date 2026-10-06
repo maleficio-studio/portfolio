@@ -3,7 +3,7 @@
  * Theme functions and definitions
  *
  * @package MALEFICIO Portfolio
- * @version 1.0.2
+ * @version 1.0.3
  */
 
 // Add support for block templates
