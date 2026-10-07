@@ -3,7 +3,7 @@
  * Theme functions and definitions
  *
  * @package MALEFICIO Portfolio
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 // Add support for block templates
@@ -146,7 +146,26 @@ function portfolio_dynamic_blocks_with_acf( $block_content, $block ) {
             }
 
             if ( !empty($url) ) {
-                $html = '<div class="wp-block-buttons"><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="' . esc_url($url) . '" target="' . esc_attr($target) . '" rel="noopener noreferrer">' . esc_html($title) . '</a></div></div>';
+                $parsed_url = wp_parse_url($url);
+                $host = isset($parsed_url['host']) ? strtolower($parsed_url['host']) : '';
+                $google_hosts = array('sites.google.com', 'docs.google.com', 'drive.google.com');
+                $is_google_url = in_array($host, $google_hosts, true);
+
+                if ( $is_google_url ) {
+                    $preview_url = $url;
+
+                    if ( $host === 'drive.google.com' && preg_match('#/file/d/([^/]+)#', $url, $matches) ) {
+                        $preview_url = 'https://drive.google.com/file/d/' . rawurlencode($matches[1]) . '/preview';
+                    } elseif ( $host === 'docs.google.com' && preg_match('#/(document|spreadsheets|presentation)/d/([^/]+)#', $url, $matches) ) {
+                        $preview_url = 'https://docs.google.com/' . $matches[1] . '/d/' . rawurlencode($matches[2]) . '/preview';
+                    }
+
+                    $html = '<div class="acf-livrable-preview"><iframe src="' . esc_url($preview_url) . '" title="' . esc_attr($title) . '" loading="lazy" allowfullscreen></iframe></div>';
+                    $html .= '<p class="acf-livrable-preview-link"><a href="' . esc_url($url) . '" target="' . esc_attr($target) . '" rel="noopener noreferrer">' . esc_html($title) . '</a></p>';
+                } else {
+                    $html = '<div class="wp-block-buttons"><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="' . esc_url($url) . '" target="' . esc_attr($target) . '" rel="noopener noreferrer">' . esc_html($title) . '</a></div></div>';
+                }
+
                 $block_content = $html;
             } else {
                 return '';
