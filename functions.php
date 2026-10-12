@@ -3,7 +3,7 @@
  * Theme functions and definitions
  *
  * @package MALEFICIO Portfolio
- * @version 1.2.2
+ * @version 1.2.3
  */
 
 // Add support for block templates
@@ -12,11 +12,9 @@ add_action('after_setup_theme', function() {
 });
 
 /**
- * ─────────────────────────────────────────────────────────────
  * Automatic Theme Updates via GitHub Releases
  * Uses YahnisElsts/plugin-update-checker v5.7
  * Repository: https://github.com/maleficio-studio/portfolio
- * ─────────────────────────────────────────────────────────────
  */
 require get_template_directory() . '/vendor/plugin-update-checker/plugin-update-checker.php';
 
@@ -34,14 +32,152 @@ $maleficio_update_checker->setBranch('main');
 /**
  * Filter block output to replace content with ACF data
  */
+function portfolio_get_livrable_field_value( $post_id ) {
+    $field_names = array( 'field_6abe3d82e717f', 'fichiers_livrables', 'livrables' );
+
+    if ( function_exists( 'get_field' ) ) {
+        foreach ( $field_names as $field_name ) {
+            $livrable = portfolio_normalize_livrable( get_field( $field_name, $post_id ) );
+            if ( $livrable ) {
+                return $livrable;
+            }
+        }
+
+        if ( function_exists( 'get_field_objects' ) ) {
+            $fields = get_field_objects( $post_id );
+            if ( is_array( $fields ) ) {
+                foreach ( $fields as $field ) {
+                    $field_name = $field['name'] ?? '';
+                    $field_label = $field['label'] ?? '';
+                    if ( false === stripos( $field_name . ' ' . $field_label, 'livrable' ) ) {
+                        continue;
+                    }
+
+                    $livrable = portfolio_normalize_livrable( $field['value'] ?? null );
+                    if ( $livrable ) {
+                        return $livrable;
+                    }
+                }
+            }
+        }
+    }
+
+    foreach ( array( 'fichiers_livrables', 'livrables' ) as $meta_key ) {
+        $livrable = portfolio_normalize_livrable( get_post_meta( $post_id, $meta_key, true ) );
+        if ( $livrable ) {
+            return $livrable;
+        }
+    }
+
+    return null;
+}
+
+function portfolio_normalize_livrable( $value ) {
+    $title = 'Voir le livrable';
+    $target = '_blank';
+
+    if ( is_array( $value ) ) {
+        $title = ! empty( $value['title'] ) ? $value['title'] : $title;
+        $target = ! empty( $value['target'] ) ? $value['target'] : $target;
+    }
+
+    $url = portfolio_extract_livrable_url( $value );
+    if ( ! $url && is_numeric( $value ) && function_exists( 'wp_get_attachment_url' ) ) {
+        $url = wp_get_attachment_url( (int) $value ) ?: '';
+    }
+
+    $url = esc_url_raw( trim( $url ) );
+    $parsed_url = wp_parse_url( $url );
+    if ( ! is_array( $parsed_url ) || empty( $parsed_url['host'] ) || ! in_array( $parsed_url['scheme'] ?? '', array( 'http', 'https' ), true ) ) {
+        return null;
+    }
+
+    return array(
+        'url'    => $url,
+        'title'  => $title,
+        'target' => $target,
+    );
+}
+
+function portfolio_extract_livrable_url( $value ) {
+    if ( is_object( $value ) ) {
+        $value = (array) $value;
+    }
+
+    if ( is_array( $value ) ) {
+        foreach ( array( 'url', 'value', 'ID', 'id' ) as $key ) {
+            if ( isset( $value[ $key ] ) ) {
+                $url = portfolio_extract_livrable_url( $value[ $key ] );
+                if ( $url ) {
+                    return $url;
+                }
+            }
+        }
+
+        foreach ( $value as $key => $nested_value ) {
+            if ( in_array( $key, array( 'title', 'target', 'label' ), true ) ) {
+                continue;
+            }
+
+            $url = portfolio_extract_livrable_url( $nested_value );
+            if ( $url ) {
+                return $url;
+            }
+        }
+
+        return '';
+    }
+
+    if ( is_numeric( $value ) && function_exists( 'wp_get_attachment_url' ) ) {
+        return wp_get_attachment_url( (int) $value ) ?: '';
+    }
+
+    if ( ! is_string( $value ) || '' === trim( $value ) ) {
+        return '';
+    }
+
+    $url = esc_url_raw( trim( $value ) );
+    $parsed_url = wp_parse_url( $url );
+    if ( ! is_array( $parsed_url ) || empty( $parsed_url['host'] ) || ! in_array( $parsed_url['scheme'] ?? '', array( 'http', 'https' ), true ) ) {
+        return '';
+    }
+
+    return $url;
+}
+
+function portfolio_livrable_embed_url( $url ) {
+    $parsed_url = wp_parse_url( $url );
+    if ( ! is_array( $parsed_url ) || empty( $parsed_url['host'] ) ) {
+        return $url;
+    }
+
+    $host = strtolower( $parsed_url['host'] );
+    if ( 'drive.google.com' === $host && preg_match( '#/file/d/([^/]+)#', $parsed_url['path'] ?? '', $matches ) ) {
+        return 'https://drive.google.com/file/d/' . rawurlencode( $matches[1] ) . '/preview';
+    }
+
+    if ( 'drive.google.com' === $host && ! empty( $parsed_url['query'] ) ) {
+        parse_str( $parsed_url['query'], $query_args );
+        if ( ! empty( $query_args['id'] ) ) {
+            return 'https://drive.google.com/file/d/' . rawurlencode( $query_args['id'] ) . '/preview';
+        }
+    }
+
+    if ( 'docs.google.com' === $host && preg_match( '#/(document|spreadsheets|presentation)/(?:u/\d+/)?d/([^/]+)#', $parsed_url['path'] ?? '', $matches ) ) {
+        return 'https://docs.google.com/' . $matches[1] . '/d/' . rawurlencode( $matches[2] ) . '/preview';
+    }
+
+    return $url;
+}
+
 function portfolio_dynamic_blocks_with_acf( $block_content, $block ) {
     // Only apply on single posts and if ACF is active
-    if ( ! is_single() || ! function_exists('get_field') ) {
+    if ( ! is_singular() || ! function_exists('get_field') ) {
         return $block_content;
     }
 
     $post_id = get_the_ID();
-    
+
     // 0. Titre principal
     if ( $block['blockName'] === 'core/post-title' ) {
         $acf_titre = get_field('titre', $post_id);
@@ -123,56 +259,25 @@ function portfolio_dynamic_blocks_with_acf( $block_content, $block ) {
 
     // 7. Fichiers livrables (Lien)
     if ( $block['blockName'] === 'core/paragraph' && isset($block['attrs']['className']) && strpos($block['attrs']['className'], 'acf-fichiers-livrables') !== false ) {
-        // Essayer les différentes clés/noms potentiels
-        $lien = get_field('field_6abe3d82e717f', $post_id);
+        $lien = portfolio_get_livrable_field_value( $post_id );
+
         if ( ! $lien ) {
-            $lien = get_field('fichiers_livrables', $post_id);
-        }
-        if ( ! $lien ) {
-            $lien = get_field('livrables', $post_id);
-        }
-        
-        if ( $lien ) {
-            $url = '';
-            $title = 'Voir le livrable';
-            $target = '_blank';
-
-            if ( is_array($lien) && isset($lien['url']) ) {
-                $url = $lien['url'];
-                $title = !empty($lien['title']) ? $lien['title'] : $title;
-                $target = !empty($lien['target']) ? $lien['target'] : $target;
-            } elseif ( is_string($lien) ) {
-                $url = $lien;
-            }
-
-            if ( !empty($url) ) {
-                $parsed_url = wp_parse_url($url);
-                $host = isset($parsed_url['host']) ? strtolower($parsed_url['host']) : '';
-                $google_hosts = array('sites.google.com', 'docs.google.com', 'drive.google.com');
-                $is_google_url = in_array($host, $google_hosts, true);
-
-                if ( $is_google_url ) {
-                    $preview_url = $url;
-
-                    if ( $host === 'drive.google.com' && preg_match('#/file/d/([^/]+)#', $url, $matches) ) {
-                        $preview_url = 'https://drive.google.com/file/d/' . rawurlencode($matches[1]) . '/preview';
-                    } elseif ( $host === 'docs.google.com' && preg_match('#/(document|spreadsheets|presentation)/d/([^/]+)#', $url, $matches) ) {
-                        $preview_url = 'https://docs.google.com/' . $matches[1] . '/d/' . rawurlencode($matches[2]) . '/preview';
-                    }
-
-                    $html = '<div class="acf-livrable-preview"><iframe src="' . esc_url($preview_url) . '" title="' . esc_attr($title) . '" loading="lazy" allowfullscreen></iframe></div>';
-                    $html .= '<p class="acf-livrable-preview-link"><a href="' . esc_url($url) . '" target="' . esc_attr($target) . '" rel="noopener noreferrer">' . esc_html($title) . '</a></p>';
-                } else {
-                    $html = '<div class="wp-block-buttons"><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="' . esc_url($url) . '" target="' . esc_attr($target) . '" rel="noopener noreferrer">' . esc_html($title) . '</a></div></div>';
-                }
-
-                $block_content = $html;
-            } else {
-                return '';
-            }
-        } else {
             return '';
         }
+
+        $url = $lien['url'];
+        $title = ! empty( $lien['title'] ) ? $lien['title'] : 'Voir le livrable';
+        $embed_url = portfolio_livrable_embed_url( $url );
+        $block_content = '<div class="acf-livrable-preview" style="width: 100%; height: 800px;">
+        <iframe
+            src="' . esc_url( $embed_url ) . '"
+            title="' . esc_attr( $title ) . '"
+            loading="lazy"
+            allowfullscreen
+            style="width: 100%; height: 100%; border: 0; display: block;"
+        ></iframe>
+        </div>';
+        $block_content .= '<p class="acf-livrable-preview-link"><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $title ) . '</a></p>';
     }
 
     // 8. Apprentissages critiques
@@ -181,7 +286,7 @@ function portfolio_dynamic_blocks_with_acf( $block_content, $block ) {
         $acs = get_field('apprentissages_critiques', $post_id);
         if ( ! empty($acs) && is_array($acs) && $field_obj ) {
             $html = '<ul class="acf-ac-list">';
-            foreach( $acs as $ac_key ) {
+            foreach ( $acs as $ac_key ) {
                 $label = isset($field_obj['choices'][$ac_key]) ? $field_obj['choices'][$ac_key] : $ac_key;
                 $display = $label;
                 $html .= '<li>' . esc_html($display) . '</li>';
@@ -199,7 +304,7 @@ function portfolio_dynamic_blocks_with_acf( $block_content, $block ) {
         $ressources = get_field('ressources_mobilisees', $post_id);
         if ( ! empty($ressources) && is_array($ressources) && $field_obj ) {
             $html = '<ul class="acf-rm-list">';
-            foreach( $ressources as $res_key ) {
+            foreach ( $ressources as $res_key ) {
                 $label = isset($field_obj['choices'][$res_key]) ? $field_obj['choices'][$res_key] : $res_key;
                 $display = $label;
                 $html .= '<li>' . esc_html($display) . '</li>';

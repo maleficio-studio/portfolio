@@ -135,10 +135,10 @@
 		"background": {
 			"backgroundAttachment": "fixed",
 			"backgroundImage": {
-				"id": 27,
+				"id": 22,
 				"source": "file",
 				"title": "pattern-triforce",
-				"url": "https://portfolio-de-corentin-delvaque.wp.local/wp-content/uploads/2026/09/pattern-triforce.png"
+				"url": "https://portfolio.maleficio-studio.eu/wp-content/uploads/2026/10/pattern-triforce.png"
 			},
 			"backgroundPosition": "50% 0%",
 			"backgroundSize": "50px"
@@ -161,7 +161,8 @@
 			"h1": {
 				"typography": {
 					"fontFamily": "var(--wp--preset--font-family--pixelify-sans)",
-					"fontSize": "1.5rem"
+					"fontSize": "8rem",
+					"textAlign": "left"
 				}
 			},
 			"h2": {
@@ -170,8 +171,8 @@
 				},
 				"typography": {
 					"fontFamily": "var(--wp--preset--font-family--pixelify-sans)",
-					"fontSize": "8rem",
-					"textAlign": "center"
+					"fontSize": "1.5rem",
+					"textAlign": "left"
 				}
 			},
 			"h3": {

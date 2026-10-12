@@ -4,7 +4,7 @@ Theme URI: https://github.com/maleficio-studio/portfolio
 Author: Corentin Delvaque
 Author URI: https://maleficio-studio.fr
 Description: Thème WordPress du portfolio MALEFICIO
-Version: 1.2.2
+Version: 1.2.3
 */
 
 body {
@@ -19,9 +19,12 @@ body {
 }
 
 .acf-livrable-preview {
+  box-sizing: border-box;
   width: 100%;
   height: min(80vh, 900px);
+  height: min(80dvh, 900px);
   min-height: 480px;
+  min-height: min(480px, 80dvh);
   overflow: hidden;
 }
 
@@ -36,9 +39,15 @@ body {
   margin-top: 0.75rem;
 }
 
+.kb-nav-sub-menu {
+  margin-bottom: revert-layer !important;
+}
+
 @media (max-width: 600px) {
   .acf-livrable-preview {
-    height: 70vh;
-    min-height: 360px;
+    min-height: 360px !important;
+    .iframe {
+      min-height: 360px !important;
+    }
   }
 }
